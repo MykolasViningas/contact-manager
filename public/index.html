@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="javascripts/jquery.js"></script>
+    <script src="javascripts/handlebars.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500&family=Roboto:wght@300;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <script src="javascripts/app.js"></script>
+  </head>
+  <body>
+    <header>
+      <h1>Contact Manager</h1>
+    </header>
+    <main>
+      <div id="rows">
+        <div id="first_row">
+          <a href="#" class="add_contact">Add Contact</a>
+          <input type="text" id="search" placeholder="Search">
+
+          <form action="#" id="create_tag">
+            <input type="text" placeholder="Create a tag">
+            <button type="submit">Add</button>
+          </form>
+
+          <div id="tags"></div>
+        </div>
+        <div id="second_row"></div>
+
+        <div id="form_container">
+          <h2>Create Contact</h2>
+          <form action="/api/contacts/" method="POST" class="create">
+            <dl>
+              <dt>
+                <label for="full_name">Full name:</label>
+              </dt>
+              <dd>
+                <input type="text" name="full_name" id="full_name">
+                <span class="error_message">Please enter the name field.</span>
+              </dd>
+              <dt>
+                <label for="email">Email address:</label>
+              </dt>
+              <dd>
+                <input type="email" name="email" id="email">
+                <span class="error_message">Please enter the valid email field.</span>
+              </dd>
+              <dt>
+                <label for="phone_number">Telephone number:</label>
+              </dt>
+              <dd>
+                <input type="text" name="phone_number" id="phone_number">
+                <span class="error_message">Please enter the phone field.</span>
+              </dd>
+              <dt>
+                <label for="tags">Tags:</label>
+              </dt>
+              <dd>
+              </dd>
+            </dl>
+
+            <div id="form_controls">
+              <button type="submit" id="submit">Submit</button>
+              <button type="button" id="cancel">Cancel</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="third_row"></div>
+
+        <script id="contacts" type="text/x-handlebars-template">
+          {{#if contacts}}
+          <ul id="contact_list">
+            {{#each contacts}}
+              {{> contact}}
+            {{/each}}
+          </ul>
+          {{else}}
+          <h2>There are no contacts.</h2>
+          <a href="#" class="add_contact">Add Contact</a>
+          {{/if}}
+        </script>
+
+        <script id="contact" type="text/x-handlebars-template">
+          <li id="{{id}}">
+            <h3 class="name">{{full_name}}</h3>
+            <dl>
+              <dt>Phone Number:</dt>
+              <dd class="phone">{{phone_number}}</dd>
+              <dt>Email:</dt>
+              <dd class="email">{{email}}</dd>
+              <dt>Tags:</dt>
+              <dd class="tags">{{tags}}</dd>
+            </dl>
+
+          <div id="contact_controls">
+            <a href="#" id="edit">Edit</a>
+            <a href="#" id="delete">Delete</a>
+          </div>
+          </li>
+        </script>
+      </div>
+    </main>
+  </body>
+</html>
