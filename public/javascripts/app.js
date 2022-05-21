@@ -148,16 +148,24 @@ class View {
     this.secondRow.style.display = 'block';
   }
 
+  tagExists(tagName) {
+    return [...this.tags.children].some(tag => {
+      return tag.firstElementChild.textContent === tagName;
+    });
+  }
+
   addTag() {
     let input = this.createTagForm.firstElementChild;
-
-    let tag = document.createElement('a');
     let value = input.value.trim();
 
-    if (value.length === 0) return;
+    if (value.length === 0) {
+      return;
+    } else if (this.tagExists(value)) {
+      alert('Tag already exists!');
+      return;
+    }
 
-    tag.innerHTML = `<p>${value}</p><span>x</span>`;
-    this.tags.appendChild(tag);
+    this.addToTags(value);
     this.createTagForm.reset();
   }
 
