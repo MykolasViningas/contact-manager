@@ -258,12 +258,12 @@ class View {
     this.contactForm.querySelector(`label[for=${field}]`).classList.toggle('invalid', false);
   }
 
-  markFields() {
+  markFields(editForm) {
     ['full_name', 'email', 'phone_number'].forEach(field => {
       let input = this.contactForm[field];
       let value = input.value.trim();
 
-      if (value === '') {
+      if (value === '' && !editForm) {
         if (field === 'full_name') {
           this.markInvalidInput(field, 'Please provide a name.');
         } else if (field === 'email') {
@@ -493,13 +493,16 @@ class Controller {
 
   handleContactFormSubmit(method, url, formData) {
     if (method === 'POST') {
-      this.view.markFields();
+      this.view.markFields(false);
       if (this.view.invalidFormInputs()) return;
 
       this.model.makeFormSubmit('POST', url, formData, data => {
         this.view.addContact(data);
       });
     } else if (method === 'PUT') {
+      this.view.markFields(true);
+      if (this.view.invalidFormInputs()) return;
+
       this.model.makeFormSubmit('PUT', url, formData, data => {
         this.view.updateContact(data);
       });
