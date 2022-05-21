@@ -356,6 +356,15 @@ class View {
     return this.contactForm.querySelector('.invalid');
   }
 
+  contactHasSelectedTags(contact) {
+    let selectedTags = [...document.querySelectorAll('#tags a.selected p')].map(p => p.textContent);
+    let contactTags = contact.querySelector('.tags').textContent.split(',');
+
+    if (selectedTags.length > contactTags.length) return false;
+
+    return contactTags.every(tag => selectedTags.includes(tag));
+  }
+
   showSearchResults() {
     let value = this.search.value.trim();
     let contacts = document.querySelectorAll('#contact_list li');
@@ -365,22 +374,21 @@ class View {
       this.thirdRow.textContent = `There are no contacts that include "${value}".`;
       return;
     }
-    
-    contacts = [...contacts];
 
     if (value === '') {
-      contacts.forEach(contact => contact.style.display = 'inline-block');
-      this.thirdRow.style.display = 'none';
+      this.showContactsOfSelectedTags();
       return;
     }
 
-    contacts.forEach(li => {
-      let contactName = li.querySelector('.name').textContent.toLowerCase();
+    contacts = [...contacts];
 
-      if (contactName.indexOf(value.toLowerCase()) !== -1) {
-        li.style.display = 'inline-block';
+    contacts.forEach(contact => {
+      let contactName = contact.querySelector('.name').textContent.toLowerCase();
+
+      if (contactName.indexOf(value.toLowerCase()) !== -1 && this.contactHasSelectedTags(contact)) {
+        contact.style.display = 'inline-block';
       } else {
-        li.style.display = 'none';
+        contact.style.display = 'none';
       }
     });
 
