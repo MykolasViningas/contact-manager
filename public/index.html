@@ -34,28 +34,28 @@
 
         <div id="form_container">
           <h2>Create Contact</h2>
-          <form action="/api/contacts/" method="POST" class="create">
+          <form action="/api/contacts/" method="POST" class="create" novalidate>
             <dl>
               <dt>
                 <label for="full_name">Full name:</label>
               </dt>
               <dd>
                 <input type="text" name="full_name" id="full_name">
-                <span class="error_message">Please enter the name field.</span>
+                <span class="error_message"></span>
               </dd>
               <dt>
                 <label for="email">Email address:</label>
               </dt>
               <dd>
-                <input type="email" name="email" id="email">
-                <span class="error_message">Please enter the valid email field.</span>
+                <input type="email" name="email" id="email" pattern=".+@.+">
+                <span class="error_message"></span>
               </dd>
               <dt>
                 <label for="phone_number">Telephone number:</label>
               </dt>
               <dd>
-                <input type="text" name="phone_number" id="phone_number">
-                <span class="error_message">Please enter the phone field.</span>
+                <input type="text" name="phone_number" id="phone_number" pattern="^\d{10,15}$">
+                <span class="error_message"></span>
               </dd>
               <dt>
                 <label for="tags">Tags:</label>

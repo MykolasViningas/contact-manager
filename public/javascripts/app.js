@@ -242,10 +242,11 @@ class View {
     });
   }
 
-  markInvalidInput(field) {
+  markInvalidInput(field, message) {
     let input = this.contactForm[field];
 
     input.classList.add('invalid');
+    input.nextElementSibling.textContent = message;
     input.nextElementSibling.style.display = 'block';
     this.contactForm.querySelector(`label[for=${field}]`).classList.add('invalid');
   }
@@ -254,14 +255,27 @@ class View {
     let input = this.contactForm[field];
 
     input.classList.toggle('invalid', false);
+    input.nextElementSibling.textContent = '';
     input.nextElementSibling.style.display = 'none';
     this.contactForm.querySelector(`label[for=${field}]`).classList.toggle('invalid', false);
   }
 
   markFields() {
     ['full_name', 'email', 'phone_number'].forEach(field => {
-      if (this.contactForm[field].value.trim() === '') {
-        this.markInvalidInput(field);
+      let input = this.contactForm[field];
+      let value = input.value.trim();
+
+      if (value === '') {
+        if (field === 'full_name') {
+          this.markInvalidInput(field, 'Please provide a name.');
+        } else if (field === 'email') {
+          this.markInvalidInput(field, 'Please provide an email.');
+        } else {
+          this.markInvalidInput(field, 'Please provide a phone number.');
+        }
+      } else if (input.validity.patternMismatch) {
+        let placeholder = field === 'email' ? field : 'phone number';
+        this.markInvalidInput(field, `Please provide a valid ${placeholder}.`);
       } else {
         this.markValidInput(field);
       }
