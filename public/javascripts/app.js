@@ -1,5 +1,3 @@
-// Model - View - Controller
-
 class Model {
   constructor() {}
 
