@@ -174,7 +174,7 @@ class View {
       tag.remove();
     } else if (tagChild.tagName === 'P') {
       tag.classList.toggle('selected');
-      this.showContactsOfSelectedTags()
+      this.showContactsOfSelectedTagsAndSearchValue(false);
     }
   }
 
@@ -198,45 +198,6 @@ class View {
       
       label.appendChild(input);
       dd.appendChild(label);
-    });
-  }
-
-  showContactsOfSelectedTags() {
-    let selectedTags = [...document.querySelectorAll('#tags a.selected p')].map(p => p.textContent);
-    let contacts = document.querySelector('#contact_list');
-
-    contacts = contacts ? [...contacts.children] : [];
-
-    if (selectedTags.length === 0) {
-      contacts.forEach(li => li.style.display = 'inline-block');
-      this.thirdRow.style.display = 'none';
-      return;
-    }
-
-    this.showContactsByTags(contacts, selectedTags);
-    
-    if (contacts.length === 0 || contacts.every(contact => contact.style.display === 'none')) {
-      this.thirdRow.style.display = 'block';
-      this.thirdRow.textContent = `There are no contacts with tag${selectedTags.length > 1 ? 's' : ''} "${selectedTags.join(', ')}".`;
-    } else {
-      this.thirdRow.style.display = 'none';
-    }
-  }
-
-  showContactsByTags(contacts, tags) {
-    contacts.forEach(li => {
-      let contactTags = li.querySelector('.tags').textContent.split(',');
-
-      for (let i = 0; i < tags.length; i++) {
-        let tag = tags[i];
-
-        if (contactTags.includes(tag)) {
-          li.style.display = 'inline-block';
-        } else {
-          li.style.display = 'none';
-          return;
-        }
-      }
     });
   }
 
@@ -356,36 +317,43 @@ class View {
     return this.contactForm.querySelector('.invalid');
   }
 
+  contactMatchesSearchValue(contact) {
+    let searchValue = this.search.value.trim().toLowerCase();
+    let contactName = contact.querySelector('.name').textContent.toLowerCase();
+
+    return searchValue === '' || contactName.indexOf(searchValue) !== -1;
+  }
+
   contactHasSelectedTags(contact) {
     let selectedTags = [...document.querySelectorAll('#tags a.selected p')].map(p => p.textContent);
     let contactTags = contact.querySelector('.tags').textContent.split(',');
 
+    if (selectedTags.length === 0) return true;
+
     if (selectedTags.length > contactTags.length) return false;
 
-    return contactTags.every(tag => selectedTags.includes(tag));
+    return selectedTags.every(tag => contactTags.includes(tag));
   }
 
-  showSearchResults() {
-    let value = this.search.value.trim();
-    let contacts = document.querySelectorAll('#contact_list li');
-
-    if (!contacts) {
+  displayNoResultMessage(searchAction, value) {
+    if (searchAction) {
       this.thirdRow.style.display = 'block';
       this.thirdRow.textContent = `There are no contacts that include "${value}".`;
-      return;
+    } else {
+      this.thirdRow.style.display = 'block';
+      this.thirdRow.textContent = `There are no contacts with tag${value.length > 1 ? 's' : ''} "${value.join(', ')}".`;
     }
+  }
 
-    if (value === '') {
-      this.showContactsOfSelectedTags();
-      return;
-    }
+  showContactsOfSelectedTagsAndSearchValue(searchAction) {
+    let selectedTags = [...document.querySelectorAll('#tags a.selected p')].map(p => p.textContent);
+    let searchValue = this.search.value.trim();
+    let contacts = document.querySelectorAll('#contact_list li');
 
-    contacts = [...contacts];
+    contacts = contacts ? [...contacts] : [];
 
     contacts.forEach(contact => {
-      let contactName = contact.querySelector('.name').textContent.toLowerCase();
-
-      if (contactName.indexOf(value.toLowerCase()) !== -1 && this.contactHasSelectedTags(contact)) {
+      if (this.contactHasSelectedTags(contact) && this.contactMatchesSearchValue(contact)) {
         contact.style.display = 'inline-block';
       } else {
         contact.style.display = 'none';
@@ -393,8 +361,19 @@ class View {
     });
 
     if (contacts.length === 0 || contacts.every(contact => contact.style.display === 'none')) {
-      this.thirdRow.style.display = 'block';
-      this.thirdRow.textContent = `There are no contacts that include "${value}".`;
+      if (searchAction && searchValue !== '') {
+        this.displayNoResultMessage(true, searchValue);
+      } else if (selectedTags.length > 0) {
+        this.displayNoResultMessage(false, selectedTags);
+      } else {
+        this.thirdRow.style.display = 'none';
+      }
+    } else if (selectedTags.length > 0 && (contacts.length === 0 || contacts.every(contact => contact.style.display === 'none'))) {
+      if (searchAction && searchValue !== '') {
+       this.displayNoResultMessage(true, searchValue);
+      } else {
+       this.displayNoResultMessage(false, selectedTags);
+      }
     } else {
       this.thirdRow.style.display = 'none';
     }
@@ -525,7 +504,7 @@ class Controller {
   }
 
   handleSearch() {
-    this.view.showSearchResults();
+    this.view.showContactsOfSelectedTagsAndSearchValue(true);
   }
 }
 
